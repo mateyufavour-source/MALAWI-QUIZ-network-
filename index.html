@@ -1,0 +1,262 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Malawi Quiz 🇲🇼</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;color:#111;background:#fff;padding-bottom:75px}
+header{padding:22px 16px;border-bottom:1px solid #ddd;font-size:23px;font-weight:bold}
+header span{color:#087a45}
+nav{display:flex;gap:8px;overflow:auto;padding:12px;border-bottom:1px solid #eee}
+button{border:1px solid #ddd;background:#fff;padding:12px 16px;border-radius:25px;cursor:pointer;font-size:14px}
+main{max-width:700px;margin:auto;padding:15px}
+.page{display:block}.hidden{display:none!important}
+.card{padding:18px 0;border-bottom:1px solid #eee}
+h2{font-size:26px}.muted{font-size:14px;color:#666;line-height:1.5}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:25px;margin:30px 0}
+.stat small{display:block;color:#666;margin-bottom:8px}
+.stat strong{font-size:22px;font-weight:500}
+.wide{width:100%;padding:16px}
+.primary{background:#087a45;color:#fff;border-color:#087a45}
+input,select{width:100%;padding:13px;margin:8px 0 16px;border:1px solid #ddd;border-radius:8px;font-size:16px}
+label{font-size:14px;font-weight:bold}
+.option{display:block;width:100%;text-align:left;margin:9px 0;padding:15px;border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:12px 5px;border-bottom:1px solid #eee}
+th{background:#f5f5f5}
+.small{font-size:12px;color:#666;line-height:1.5}
+.bottom{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #ddd;display:flex;justify-content:space-around;padding:7px 0}
+.bottom button{border:0;border-radius:0;flex:1;padding:5px 1px;font-size:10px}
+.bottom b{display:block;font-size:20px;margin-bottom:3px}
+</style>
+</head>
+<body>
+<header>🇲🇼 <span>MALAWI QUIZ</span></header>
+<nav>
+<button onclick="page('home')">Home</button>
+<button onclick="page('quiz')">Daily Quiz</button>
+<button onclick="page('leaderboard')">Leaderboard</button>
+<button onclick="page('prizes')">Prizes</button>
+<button onclick="page('account')">Account</button>
+</nav>
+<main>
+<section id="home" class="page">
+<h2>Competitions</h2>
+<div class="card">
+<h3>🏆 Malawi Daily Quiz</h3>
+<div class="stats">
+<div class="stat"><small>TODAY'S TOPIC</small><strong>General Knowledge</strong></div>
+<div class="stat"><small>AVAILABLE</small><strong>Daily</strong></div>
+<div class="stat"><small>YOUR POINTS</small><strong id="points">0</strong></div>
+<div class="stat"><small>YOUR PROGRESS</small><strong id="progress">0 / 20</strong></div>
+</div>
+<button class="primary wide" onclick="startQuiz()">Start Quiz</button>
+</div>
+<div class="card">
+<h3>🏆 Daily leaderboard</h3>
+<p class="muted">Top 10 prizes: MK 3,500 total.</p>
+<button onclick="page('leaderboard')">View leaderboard</button>
+</div>
+</section>
+
+<section id="account" class="page hidden">
+<div class="card">
+<h2>Free Registration</h2>
+<label>Display name</label><input id="regName" placeholder="Your display name">
+<label>Username</label><input id="regUser" placeholder="Choose username">
+<label>Demo PIN</label><input id="regPin" type="password" placeholder="At least 4 characters">
+<button class="primary wide" onclick="register()">Register</button>
+</div>
+<div class="card">
+<h2>Login</h2>
+<label>Username</label><input id="loginUser" placeholder="Username">
+<label>Demo PIN</label><input id="loginPin" type="password" placeholder="PIN">
+<button class="wide" onclick="login()">Login</button>
+<button onclick="logout()">Logout</button>
+<p id="message"></p>
+<p class="small">Prototype only: accounts and PINs are stored in this browser. Do not use real passwords.</p>
+</div>
+</section>
+
+<section id="quiz" class="page hidden">
+<h2>Daily Quiz</h2>
+<p id="quizStatus" class="muted">Log in to play.</p>
+<div id="questionArea">Start the quiz to begin.</div>
+<p id="feedback"></p>
+<button id="next" class="primary hidden" onclick="nextQuestion()">Next question</button>
+<button id="boardBtn" class="hidden" onclick="page('leaderboard')">View leaderboard</button>
+</section>
+
+<section id="leaderboard" class="page hidden">
+<h2>🏆 Leaderboard</h2>
+<table><thead><tr><th>Rank</th><th>Player</th><th>Points</th><th>Prize</th></tr></thead><tbody id="leaderRows"></tbody></table>
+<p class="small">Demo rankings are local to this browser and are not verified results.</p>
+</section>
+
+<section id="prizes" class="page hidden">
+<h2>🏆 Daily Prizes</h2>
+<p class="muted">Free to play. Prizes funded by the owner.</p>
+<table><thead><tr><th>Position</th><th>Prize (MK)</th></tr></thead><tbody id="prizeRows"></tbody><tfoot><tr><th>Total</th><th>3,500</th></tr></tfoot></table>
+<p class="small">Real prizes require verified results and a secure payment process.</p>
+</section>
+
+<section id="tasks" class="page hidden">
+<h2>Tasks</h2><p>Play the quiz to earn points.</p><button class="primary wide" onclick="startQuiz()">Play Quiz</button>
+</section>
+<section id="follow" class="page hidden"><h2>Follow us</h2><p>Social media links coming soon.</p></section>
+<section id="wallet" class="page hidden"><h2>Wallet</h2><p>Demo points: <strong id="walletPoints">0</strong></p><p class="small">No real money or payments are handled in this prototype.</p></section>
+<section id="invite" class="page hidden"><h2>Invite friends</h2><button onclick="share()">Share Malawi Quiz</button></section>
+<section id="profile" class="page hidden"><h2>Profile</h2><p id="profileName">Guest</p><button onclick="page('account')">Register / Login</button></section>
+
+<section id="admin" class="page hidden">
+<h2>Demo Admin</h2>
+<p class="small">This browser-only admin is not secure.</p>
+<label>Demo password</label><input id="adminPass" type="password">
+<button onclick="adminLogin()">Open admin</button>
+<div id="adminPanel" class="hidden">
+<h3>Add question</h3>
+<label>Question</label><input id="newQ">
+<label>Option A</label><input id="optA">
+<label>Option B</label><input id="optB">
+<label>Option C</label><input id="optC">
+<label>Option D</label><input id="optD">
+<label>Correct answer</label><select id="correct"><option value="0">A</option><option value="1">B</option><option value="2">C</option><option value="3">D</option></select>
+<button onclick="addQuestion()">Add question</button><p id="adminMessage"></p>
+</div>
+</section>
+</main>
+<div class="bottom">
+<button onclick="page('home')"><b>⌂</b>Home</button>
+<button onclick="page('tasks')"><b>☷</b>Tasks</button>
+<button onclick="page('follow')"><b>♡</b>Follow</button>
+<button onclick="page('wallet')"><b>▣</b>Wallet</button>
+<button onclick="page('invite')"><b>♧</b>Invite</button>
+<button onclick="page('profile')"><b>♙</b>Profile</button>
+</div>
+
+<script>
+const PRIZES=[1200,700,450,300,250,200,150,100,75,75];
+const DEFAULT_QUESTIONS=[
+["What is the capital city of Malawi?",["Blantyre","Lilongwe","Mzuzu","Zomba"],1],
+["What is the currency of Malawi?",["Kwacha","Rand","Naira","Dollar"],0],
+["Which lake is the largest in Malawi?",["Lake Chilwa","Lake Malawi","Lake Chiuta","Lake Malombe"],1],
+["Which planet is called the Red Planet?",["Earth","Mars","Venus","Jupiter"],1],
+["How many days are in a normal year?",["360","364","365","366"],2],
+["What is 12 × 8?",["84","92","96","108"],2],
+["Which organ pumps blood?",["Lungs","Brain","Heart","Kidney"],2],
+["Which gas do plants absorb?",["Oxygen","Carbon dioxide","Helium","Hydrogen"],1],
+["How many sides has a triangle?",["2","3","4","5"],1],
+["Which is the largest ocean?",["Atlantic","Indian","Pacific","Arctic"],2],
+["What is water's boiling point at sea level?",["50°C","75°C","100°C","150°C"],2],
+["Which is the tallest land animal?",["Elephant","Giraffe","Ostrich","Camel"],1],
+["What is the opposite of ancient?",["Old","Historic","Modern","Past"],2],
+["How many months are in a year?",["10","11","12","13"],2],
+["Which plant part absorbs water?",["Flower","Leaf","Root","Fruit"],2],
+["Which instrument measures temperature?",["Barometer","Thermometer","Ruler","Compass"],1],
+["What is 100 ÷ 4?",["20","25","30","40"],1],
+["Which continent is Malawi in?",["Asia","Africa","Europe","Australia"],1],
+["What do bees collect from flowers?",["Sand","Nectar","Bark","Stone"],1],
+["How many hours are in a day?",["12","18","24","48"],2]
+];
+function load(k,f){try{return JSON.parse(localStorage.getItem(k))??f}catch(e){return f}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+function today(){let d=new Date();return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()}
+let users=load("mq_users",[]),questions=load("mq_questions",DEFAULT_QUESTIONS);
+let current=localStorage.getItem("mq_user")||"",order=[],index=0,score=0;
+function user(){return users.find(u=>u.username===current)}
+function state(u){if(!u.daily||u.daily.date!==today())u.daily={date:today(),score:0,answered:0,finished:false};return u.daily}
+function page(id){
+ document.querySelectorAll(".page").forEach(x=>x.classList.add("hidden"));
+ document.getElementById(id).classList.remove("hidden");
+ if(id==="home")refresh();
+ if(id==="leaderboard")leaderboard();
+ if(id==="prizes")renderPrizes();
+ if(id==="wallet")document.getElementById("walletPoints").textContent=user()?state(user()).score:0;
+ if(id==="profile")document.getElementById("profileName").textContent=user()?user().name:"Guest";
+ window.scrollTo(0,0);
+}
+function register(){
+ let name=regName.value.trim(),username=regUser.value.trim().toLowerCase(),pin=regPin.value;
+ if(name.length<2||username.length<3||pin.length<4){message.textContent="Enter a name, username (3+ characters) and PIN (4+ characters).";return}
+ if(!/^[a-z0-9_]+$/.test(username)){message.textContent="Use letters, numbers and underscores for username.";return}
+ if(users.some(u=>u.username===username)){message.textContent="Username already exists.";return}
+ users.push({name,username,pin,daily:{date:today(),score:0,answered:0,finished:false}});
+ current=username;localStorage.setItem("mq_user",current);save("mq_users",users);refresh();page("home");
+}
+function login(){
+ let u=users.find(x=>x.username===loginUser.value.trim().toLowerCase()&&x.pin===loginPin.value);
+ if(!u){message.textContent="Incorrect username or PIN.";return}
+ current=u.username;localStorage.setItem("mq_user",current);refresh();page("home");
+}
+function logout(){current="";localStorage.removeItem("mq_user");refresh();page("home")}
+function refresh(){
+ let u=user(),s=u?state(u):null;
+ document.getElementById("points").textContent=s?s.score:0;
+ document.getElementById("progress").textContent=s?s.answered+" / "+Math.min(questions.length,100):"0 / "+Math.min(questions.length,100);
+}
+function startQuiz(){
+ let u=user();if(!u){page("account");message.textContent="Register or log in first.";return}
+ let s=state(u);
+ if(s.finished){page("quiz");questionArea.textContent="You have finished today's quiz. Come back tomorrow.";return}
+ order=questions.map((q,i)=>i).sort(()=>Math.random()-.5).slice(0,Math.min(questions.length,100));
+ index=0;score=s.score;page("quiz");showQuestion();
+}
+function showQuestion(){
+ let u=user();if(!u)return;
+ if(index>=order.length){finish();return}
+ let q=questions[order[index]];
+ quizStatus.textContent="Player: "+u.name+" · Points: "+score;
+ questionArea.innerHTML="<h3>Question "+(index+1)+" of "+order.length+"</h3><p>"+q[0]+"</p>";
+ q[1].forEach((text,i)=>{
+  let b=document.createElement("button");b.className="option";
+  b.textContent=String.fromCharCode(65+i)+". "+text;
+  b.onclick=()=>answer(i,q,b);questionArea.appendChild(b);
+ });
+ next.classList.add("hidden");boardBtn.classList.add("hidden");
+}
+function answer(i,q){
+ document.querySelectorAll(".option").forEach(b=>b.disabled=true);
+ let u=user();if(!u)return;
+ let s=state(u);
+ if(i===q[2]){score++;feedback.textContent="✅ Correct! +1 point"}
+ else feedback.textContent="❌ Correct answer: "+q[1][q[2]];
+ s.score=score;s.answered++;save("mq_users",users);refresh();
+ quizStatus.textContent="Points: "+score+" · Answered: "+s.answered;
+ if(index+1>=order.length){finish()}else next.classList.remove("hidden");
+}
+function nextQuestion(){index++;feedback.textContent="";showQuestion()}
+function finish(){
+ let u=user();if(!u)return;
+ let s=state(u);s.finished=true;s.score=score;save("mq_users",users);
+ questionArea.innerHTML="<h3>🎉 Quiz complete!</h3><p>Your score: "+score+" points.</p>";
+ next.classList.add("hidden");boardBtn.classList.remove("hidden");refresh();leaderboard();
+}
+function renderPrizes(){
+ prizeRows.innerHTML=PRIZES.map((p,i)=>"<tr><td>"+(i+1)+"</td><td>MK "+p.toLocaleString()+"</td></tr>").join("");
+}
+function leaderboard(){
+ let ranked=users.map(u=>({name:u.name,score:state(u).score})).sort((a,b)=>b.score-a.score);
+ leaderRows.innerHTML=ranked.length?ranked.map((u,i)=>"<tr><td>"+(i+1)+"</td><td>"+escapeText(u.name)+"</td><td>"+u.score+"</td><td>"+(i<10?"MK "+PRIZES[i].toLocaleString():"—")+"</td></tr>").join(""):"<tr><td colspan='4'>No players yet.</td></tr>";
+}
+function escapeText(t){return String(t).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function adminLogin(){
+ if(adminPass.value!=="admin123"){adminMessage.textContent="Incorrect demo password.";return}
+ adminPanel.classList.remove("hidden");adminMessage.textContent="Admin demo opened.";
+}
+function addQuestion(){
+ let q=newQ.value.trim(),opts=[optA.value.trim(),optB.value.trim(),optC.value.trim(),optD.value.trim()];
+ if(!q||opts.some(x=>!x)){adminMessage.textContent="Fill in all fields.";return}
+ questions.push([q,opts,Number(correct.value)]);save("mq_questions",questions);
+ adminMessage.textContent="Question added.";newQ.value="";[optA,optB,optC,optD].forEach(x=>x.value="");
+}
+function share(){
+ if(navigator.share)navigator.share({title:"Malawi Quiz",text:"Play Malawi Quiz for free!"});
+ else alert("Share your Malawi Quiz website link with friends.");
+}
+renderPrizes();leaderboard();refresh();
+</script>
+</body>
+</html>
